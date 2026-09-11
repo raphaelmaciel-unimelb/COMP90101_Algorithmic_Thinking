@@ -3,7 +3,7 @@
 **Author:** Raphael Barbosa Maciel
 **Course:** COMP90101 - Algorithmic Thinking (COMP90101_2026_OT5_UMO_1)  
 **Date:** September 2026  
-**Repository:** [Assessment 2](https://github.com/raphaelmaciel-unimelb/COMP90101_Algorithmic_Thinking/tree/e73fff05e3382d2b11915cf778f1192d3a7351ca/Assessment%202)
+**Repository:** [Assessment 2](https://github.com/raphaelmaciel-unimelb/COMP90101_Algorithmic_Thinking/tree/e73fff05e3382d2b11915cf778f1192d3a7351ca/Assessment%202) 
 
 ---
 
