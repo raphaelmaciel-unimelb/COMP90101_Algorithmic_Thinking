@@ -1,106 +1,46 @@
 import random
 
 class DataGenerator:
+    """Data generator for priority queue evaluation complying with assessment specs."""
+
     def gen_element(self):
         """Generates and returns an integer drawn uniformly at random from [0, 10^7]."""
-        num = random.randint(0, 10**7)
-        return num
+        return random.randint(0, 10**7)
 
     def gen_push(self):
         """Returns a push operation in the form (1, key)."""
-        key = self.gen_element()
-        return (1, key)
+        return (1, self.gen_element())
 
     def gen_pop(self):
-        """Returns a pop operation in the form (2)."""
-        return (2,) # Using a tuple for consistency with gen_push
+        """Returns a pop operation in the form (2, None)."""
+        return (2, None)
 
     def gen_getTop(self):
-        """Returns a getTop operation in the form (3)."""
-        return (3,) # Using a tuple for consistency
-    
+        """Returns a getTop operation in the form (3, None)."""
+        return (3, None)
+
     def gen_exp1_sequence(self, L):
-        sequence = []
-        for i in range(L):
-            sequence.append(self.gen_push())
-        return sequence
+        """Generates a push-only sequence of length L."""
+        return [self.gen_push() for _ in range(L)]
 
-    # def gen_exp2_sequence(self, L, getTop_percent):
-    #     """Generates a sequence of length L with a mix of push and getTop."""
-    #     sequence = []
-        
-    #     for i in range(L):
-    #         roll = random.random()  # Roll the decimal die (e.g., 0.423)
-            
-    #         if roll < getTop_percent:
-    #             # This block runs 'getTop_percent' amount of the time
-    #             op = self.gen_getTop()
-    #         else:
-    #             # This block runs the rest of the time
-    #             op = self.gen_push()
-                
-    #         sequence.append(op)
-            
-    #     return sequence
-
-    def gen_exp2_sequence(self, total_ops=100000, gettop_pct=0):
-        """Generates a script of total_ops operations with a specified % of getTop calls."""
-        num_gettop = int(total_ops * (gettop_pct / 100.0))
-        num_others = total_ops - num_gettop
-
+    def gen_exp2_sequence(self, total_ops=1_000_000, gettop_pct=0.1):
+        """Generates sequence sigma containing ONLY push and getTop operations probabilistically."""
+        prob_gettop = gettop_pct / 100.0
         script = []
-        
-        # 60/40 push/pop split for non-read operations
-        for _ in range(num_others):
-            if random.random() < 0.6:
-                script.append((1, random.randint(1, 1_000_000)))  # Push (2 elements)
+        for _ in range(total_ops):
+            if random.random() < prob_gettop:
+                script.append(self.gen_getTop())
             else:
-                script.append((2, None))                          # Pop (2 elements)
-
-        for _ in range(num_gettop):
-            script.append((3, None))                              # getTop (2 elements)
-
-        random.shuffle(script)
+                script.append(self.gen_push())
         return script
 
-    # def gen_exp3_sequence(self, L, pop_percent):
-    #     """Generates a sequence of length L with a mix of push and gen_pop()."""
-    #     sequence = []
-        
-    #     for i in range(L):
-    #         roll = random.random()  # Roll the decimal die (e.g., 0.423)
-            
-    #         if roll < pop_percent:
-    #             # This block runs 'pop_percent' amount of the time
-    #             op = self.gen_pop()
-    #         else:
-    #             # This block runs the rest of the time
-    #             op = self.gen_push()
-                
-    #         sequence.append(op)
-            
-    #     return sequence
-
-    def gen_exp3_sequence(self, total_ops=50000, pop_pct=0, prefill=20000):
-        """
-        Generates an operation script with a set % of pop() calls.
-        Pre-fills initial elements to ensure pop() operations operate on non-empty data.
-        """
+    def gen_exp3_sequence(self, total_ops=1_000_000, pop_pct=0.1):
+        """Generates sequence sigma containing ONLY push and pop operations probabilistically."""
+        prob_pop = pop_pct / 100.0
         script = []
-        # Step 1: Pre-fill items
-        for _ in range(prefill):
-            script.append((1, random.randint(1, 1_000_000)))
-
-        # Step 2: Mix remaining pushes and pops based on percentage
-        num_pops = int(total_ops * (pop_pct / 100.0))
-        num_pushes = total_ops - num_pops
-
-        workload = [(2, None)] * num_pops + [(1, random.randint(1, 1_000_000)) for _ in range(num_pushes)]
-        random.shuffle(workload)
-
-        script.extend(workload)
+        for _ in range(total_ops):
+            if random.random() < prob_pop:
+                script.append(self.gen_pop())
+            else:
+                script.append(self.gen_push())
         return script
-    
-    def gen_exp4_list(self, N):
-        """Generates an unsorted list of N random integers."""
-        return [random.randint(1, 1_000_000) for _ in range(N)]

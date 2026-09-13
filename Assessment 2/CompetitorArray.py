@@ -1,53 +1,60 @@
 class CompetitorArray:
-    def __init__(self):
-        self.A = [None] * (10**6) # Pre-allocated up to 1M items
-        self.cnt = 0
-        self.i_max = -1
+    """Competitor implementation using a flat pre-allocated array tracking cnt and i_max."""
 
-    def getTop(self):
-        """Returns the maximum element without removing it."""
-        if self.i_max == -1:
-            return None
-        return self.A[self.i_max]
-    
+    def __init__(self, capacity=1_000_000):
+        self.A = [0] * capacity  # Array A of length 10^6
+        self.cnt = 0             # Counter initialized to 0
+        self.i_max = -1          # Index of largest element initialized to -1
+
     def push(self, key):
+        """Pushes an element key into array A."""
+        # A[cnt] <- key
         self.A[self.cnt] = key
-        
-        # Update i_max if array was empty or new key is larger
-        if self.i_max == -1 or key > self.A[self.i_max]:
-            self.i_max = self.cnt
-            
-        self.cnt += 1  # Always increment count on every push
-        
 
-    def _find_max_index(self):
-        """Scans valid elements from index 0 to cnt - 1 to find the max value's index."""
-        max_idx = 0
-        for i in range(1, self.cnt):
-            if self.A[i] > self.A[max_idx]:
-                max_idx = i
-        return max_idx
+        # if i_max == -1 or A[i_max] < A[cnt], i_max <- cnt
+        if self.i_max == -1 or self.A[self.i_max] < self.A[self.cnt]:
+            self.i_max = self.cnt
+
+        # cnt <- cnt + 1
+        self.cnt += 1
 
     def pop(self):
-        """Removes and returns the maximum element, then rescans to update i_max."""
-        # 1. Empty check
+        """Removes and returns the maximum element keymax."""
+        # if i_max == -1, return null
         if self.i_max == -1:
             return None
-            
-        # 2. Save current max value
-        key_max = self.A[self.i_max]
-        
-        # 3. Swap max element with the last valid element in the array
-        self.A[self.i_max] = self.A[self.cnt - 1]
-        
-        # 4. Remove the last element by reducing count
+
+        # keymax <- A[i_max]
+        keymax = self.A[self.i_max]
+
+        # swap element A[i_max] with A[cnt - 1]
+        self.A[self.i_max], self.A[self.cnt - 1] = self.A[self.cnt - 1], self.A[self.i_max]
+
+        # delete A[cnt - 1] by setting cnt <- cnt - 1
         self.cnt -= 1
-        
-        # 5 & 6. Update i_max
+
+        # if cnt == 0, set i_max <- -1
         if self.cnt == 0:
             self.i_max = -1
         else:
-            self.i_max = self._find_max_index()
-            
-        # 7. Return maximum key
-        return key_max
+            # find new maximum element by scanning array A from index 0 to cnt - 1
+            new_max_idx = 0
+            for i in range(1, self.cnt):
+                if self.A[i] > self.A[new_max_idx]:
+                    new_max_idx = i
+            self.i_max = new_max_idx
+
+        # return keymax
+        return keymax
+
+    def getTop(self):
+        """Returns the maximum element keymax without removing it."""
+        # if i_max == -1, return null
+        if self.i_max == -1:
+            return None
+
+        # keymax <- A[i_max]
+        keymax = self.A[self.i_max]
+
+        # return keymax
+        return keymax
