@@ -1,9 +1,3 @@
-<style>
-  table { width: 100%; border-collapse: collapse; }
-  tr, thead { page-break-inside: avoid !important; break-inside: avoid !important; }
-  th { white-space: nowrap; }
-</style>
-
 # Empirical Performance Analysis: MaxHeap vs. Competitor Array Priority Queue
 
 - **Author:** Raphael Barbosa Maciel
